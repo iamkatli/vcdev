@@ -1,0 +1,23 @@
+{
+  "name": "pipeline-js-docker",
+  "version": "1.0.0",
+  "description": "pipeline-js-docker",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamkatli/vcdev.git"
+  },
+  "author": "iamkatli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iamkatli/vcdev/issues"
+  },
+  "homepage": "https://github.com/iamkatli/vcdev#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
