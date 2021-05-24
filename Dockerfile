@@ -16,3 +16,7 @@ COPY . .
 # Now, tell Docker what command we want to run 
 # when our image is run inside of a container
 CMD [ "node", "server.js" ]
+
+ADD https://get.aquasec.com/6.0.0/microscanner /
+RUN chmod +x /microscanner
+RUN /microscanner --continue-on-failure && rm /microscanner
