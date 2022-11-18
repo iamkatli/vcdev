@@ -1,0 +1,153 @@
+cat /etc/selinux/config enforcing
+yum install -y wget tar podman jq httpd firewalld bind-utils openldap-clients 
+>> firewall by default installed but disabled
+
+sudo firewall-cmd --add-service=http --zone=internal --permanent 
+sudo firewall-cmd --add-service=http --zone=public --permanent 
+sudo firewall-cmd --reload
+
+vi /etc/httpd/conf/httpd.conf
+systemctl start httpd 
+systemctl enable httpd
+
+oc completion bash | sudo tee /etc/bash_completion.d/openshift > /dev/null
+
+ssh-keygen -t ed25519 -N '' -f /root/.ssh/id_rsa 
+eval "$(ssh-agent -s)" 
+ssh-add /root/.ssh/id_rsa
+
+mkdir -p /root/.openshift
+
+cat <<EOF > /root/.openshift/pull-secret.json
+{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZWRhODc4NjlhNjJhNDZjMDhmN2E3NDY1ZmMyMjkzM2U6UlVFOVc1OU9ETzdYN1RLTlA4MkhTUTNNTEpDWUxLMFBKVFlLTk5HTVlHTThTU1dMMDJINldLUzIzR0VDM0dGSQ==","email":"albert.iu@ingrammicro.com"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZWRhODc4NjlhNjJhNDZjMDhmN2E3NDY1ZmMyMjkzM2U6UlVFOVc1OU9ETzdYN1RLTlA4MkhTUTNNTEpDWUxLMFBKVFlLTk5HTVlHTThTU1dMMDJINldLUzIzR0VDM0dGSQ==","email":"albert.iu@ingrammicro.com"},"registry.connect.redhat.com":{"auth":"fHVoYy1wb29sLWQxYWRkOGE2LTgwOWEtNGI3Ny1iNjU5LWY5NzlkMzc0NTJmNTpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJOMlJpWmpneVlqUm1ZalkwWkRVeE9UazJORFZpTlRZMU1HRm1PV1V6WmlKOS5jRDFSRmJGYXNYM0hLZkZIUnpmdkZXYThOX0RUbkkwVHMzd0JwSXJDNVV6cWhnckJSM2pVVWVxSnpkOXc2dzE4ZXlDR0p5Nk9paldIcGhPUGFlY3l2NlREWmRFdjlaN2FtVmlnRk1yNUVwMi1TdEdxS2piNG1SZGdvS1hkSHNPZm14MHc2VnhMeFcySEx4UHlSUHNrY2M5Tk8tT0JjSXc3Y0gtell2VzliZWVZbGcxZ2FqUjhiUERKWHlEWXBnd0tUblFEb21ObHEtZl9rMWRJa3dNRkdBaGF4X0M4Y2s2VU9la2c2QmxyWUY1WHJtSTlkTk16UTdUT2R6R29BVWh6amp5QmRBNE1kbFlYR3F5Snl3NzdYS0thblotRWFfdGMwYVJSYnU3UzVhQWpQZVhkMlhOdU5xbTVOUnBiS2xhS2RyVGlGMm9rOWlfYTdTR0tKR3RfNEFGT2tmQlFDMmRzWmNjT2J5ZDVNWUZuMUtTeHVielJycXNEam1Fc3JzeFFSdDJLZDdtbWxrZzd0d3I0eTZrdHRWMGM1dkdHZHFUZjR2V085ZkRDVy1vMUpMM2RoOUpWZGJ2OURiMFFhN0tSOVhIQl9JcDN1THJSYWdYUEpBRi1qcWxWaXR4Wjdqb21Kamk1Q0pxVlBKaVVlcWNCVjVPWDhZMXo5clgxbzU4NGozLXN0RHpkTEMyNUd0UDlvRjdndlhpTmswODFNLThDd0RqQVh2TEVuemFqUVRCdHRWUWFmbndkdllGWE1nekJPRGt0OEpFMTZxbXRfcHNaaVdsWDBxaDcxVVlCZklFODBMdkZNRjNSaXZKS0tKemVOVkNMV0dxQ2Z0cWZrODhPZkJDM1hfVHpyeEJ1N2EzdzR3bXplQTR6dGRSZ1NqYnpQWnFVYVJEencwbw==","email":"albert.iu@ingrammicro.com"},"registry.redhat.io":{"auth":"fHVoYy1wb29sLWQxYWRkOGE2LTgwOWEtNGI3Ny1iNjU5LWY5NzlkMzc0NTJmNTpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJOMlJpWmpneVlqUm1ZalkwWkRVeE9UazJORFZpTlRZMU1HRm1PV1V6WmlKOS5jRDFSRmJGYXNYM0hLZkZIUnpmdkZXYThOX0RUbkkwVHMzd0JwSXJDNVV6cWhnckJSM2pVVWVxSnpkOXc2dzE4ZXlDR0p5Nk9paldIcGhPUGFlY3l2NlREWmRFdjlaN2FtVmlnRk1yNUVwMi1TdEdxS2piNG1SZGdvS1hkSHNPZm14MHc2VnhMeFcySEx4UHlSUHNrY2M5Tk8tT0JjSXc3Y0gtell2VzliZWVZbGcxZ2FqUjhiUERKWHlEWXBnd0tUblFEb21ObHEtZl9rMWRJa3dNRkdBaGF4X0M4Y2s2VU9la2c2QmxyWUY1WHJtSTlkTk16UTdUT2R6R29BVWh6amp5QmRBNE1kbFlYR3F5Snl3NzdYS0thblotRWFfdGMwYVJSYnU3UzVhQWpQZVhkMlhOdU5xbTVOUnBiS2xhS2RyVGlGMm9rOWlfYTdTR0tKR3RfNEFGT2tmQlFDMmRzWmNjT2J5ZDVNWUZuMUtTeHVielJycXNEam1Fc3JzeFFSdDJLZDdtbWxrZzd0d3I0eTZrdHRWMGM1dkdHZHFUZjR2V085ZkRDVy1vMUpMM2RoOUpWZGJ2OURiMFFhN0tSOVhIQl9JcDN1THJSYWdYUEpBRi1qcWxWaXR4Wjdqb21Kamk1Q0pxVlBKaVVlcWNCVjVPWDhZMXo5clgxbzU4NGozLXN0RHpkTEMyNUd0UDlvRjdndlhpTmswODFNLThDd0RqQVh2TEVuemFqUVRCdHRWUWFmbndkdllGWE1nekJPRGt0OEpFMTZxbXRfcHNaaVdsWDBxaDcxVVlCZklFODBMdkZNRjNSaXZKS0tKemVOVkNMV0dxQ2Z0cWZrODhPZkJDM1hfVHpyeEJ1N2EzdzR3bXplQTR6dGRSZ1NqYnpQWnFVYVJEencwbw==","email":"albert.iu@ingrammicro.com"}}}
+EOF
+
+cat <<EOF > install.env 
+export DOMAIN=gtjai.net
+export CLUSTERID=uat-ocp
+export POD_NETWORK="10.128.0.0/14" 
+export SVC_NETWORK="172.30.0.0/16" 
+export PULL_SECRET='$(cat /root/.openshift/pull-secret.json)' 
+export OCP_SSH_KEY="$(cat /root/.ssh/id_rsa.pub)" 
+EOF
+
+cat <<EOF > install-config.yaml 
+apiVersion: v1 
+baseDomain: ${DOMAIN} 
+compute: 
+- hyperthreading: Enabled 
+  name: worker 
+  replicas: 0 
+controlPlane: 
+  hyperthreading: Enabled 
+  name: master 
+  replicas: 3 
+metadata: 
+  name: ${CLUSTERID} 
+networking: 
+  clusterNetwork: 
+  - cidr: ${POD_NETWORK} 
+    hostPrefix: 23 
+  networkType: OpenShiftSDN 
+  serviceNetwork: 
+  - ${SVC_NETWORK} 
+platform:
+  none: {} 
+fips: false
+pullSecret: '${PULL_SECRET}' 
+sshKey: '${OCP_SSH_KEY}' 
+EOF
+
+mkdir -p /root/${CLUSTERID}
+cp install-config.yaml /root/${CLUSTERID}/install-config.yaml
+cd /root/${CLUSTERID}
+openshift-install create manifests --dir .
+sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' manifests/cluster-scheduler-02-config.yml
+cat <<EOF > /root/${CLUSTERID}/manifests/cluster-network-03-config.yml 
+apiVersion: operator.openshift.io/v1 
+kind: Network 
+metadata: 
+  name: cluster 
+spec: 
+  clusterNetwork: 
+  - cidr: ${POD_NETWORK} 
+    hostPrefix: 23 
+  serviceNetwork: 
+  - ${SVC_NETWORK} 
+  defaultNetwork: 
+    type: OpenShiftSDN 
+    openshiftSDNConfig: 
+      mode: NetworkPolicy 
+      mtu: 1450 
+      vxlanPort: 4789 
+  kubeProxyConfig: 
+    iptablesSyncPeriod: 30s 
+    proxyArguments: 
+      iptables-min-sync-period: 
+      - 30s 
+EOF
+
+openshift-install create ignition-configs --dir .
+
+sudo cp /root/${CLUSTERID}/*.ign /var/www/html 
+sudo chmod +r /var/www/html/*.ign 
+sudo chown -R apache.apache /var/www/html 
+sudo restorecon -Rv /var/www/html 
+ 
+### test setup ### 
+curl http://192.168.20.xx/bootstrap.ign
+
+openshift-install wait-for bootstrap-complete --dir /root/ocp  --log-level=debug
+echo 'export KUBECONFIG=/root/ocpdr/auth/kubeconfig' >> ~/.bashrc
+source ~/.bashrc
+oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
+​oc patch configs.imageregistry.operator.openshift.io cluster --type merge --patch '{"spec":{"storage":{"emptyDir":{}}}}'
+
+cat <<EOF | oc apply -f - 
+apiVersion: machineconfiguration.openshift.io/v1 
+kind: MachineConfigPool 
+metadata: 
+  name: infra 
+spec: 
+  machineConfigSelector: 
+    matchExpressions: 
+      - {key: machineconfiguration.openshift.io/role, operator: In, 
+values: 
+[worker,infra]} 
+  nodeSelector: 
+    matchLabels: 
+      node-role.kubernetes.io/infra: "" 
+  paused: false 
+EOF
+
+$ oc label node infra01.ocpdr.abc.systems node-role.kubernetes.io/infra= 
+$ oc label node infra02.ocpdr.abc.systems node-role.kubernetes.io/infra= 
+$ oc label node infra03.ocpdr.abc.systems node-role.kubernetes.io/infra=
+
+############ stop @p. 33
+
+
+https://docs.openshift.com/container-platform/4.11/installing/installing_platform_agnostic/installing-platform-agnostic.html
+dig +noall +answer $NAMESERVER api.$CLUSTERID.$DOMAIN
+dig +noall +answer $NAMESERVER api-int.$CLUSTERID.$DOMAIN
+dig +noall +answer $NAMESERVER random.apps.$CLUSTERID.$DOMAIN
+dig +noall +answer $NAMESERVER console-openshift-console.apps.$CLUSTERID.$DOMAIN
+dig +noall +answer $NAMESERVER bootstrap.$CLUSTERID.$DOMAIN
+
+dig +noall +answer $NAMESERVER -x 192.168.1.5
+====================================================
+217.20.168.192.in-addr.arpa. 0	IN	PTR	api-int.uat-ocp.gtjai.net. 
+217.20.168.192.in-addr.arpa. 0	IN	PTR	api.uat-ocp.gtjai.net. 
+
+curl -I https://api.openshift.com
+curl -I https://cloud.redhat.com/openshift
+curl -I https://mirror.openshift.com/pub/
+curl -I https://quay.io/
+*.quay.io
+curl -I http://quayio-production-s3.s3.amazonaws.com/ x
+curl -I https://registry.redhat.io
+curl -I https://registry.access.redhat.com
+curl -I https://sso.redhat.com
+curl -I https://storage.googleapis.com/openshift-release
+curl -I https://console.redhat.com/openshift
+*.openshiftapps.com
